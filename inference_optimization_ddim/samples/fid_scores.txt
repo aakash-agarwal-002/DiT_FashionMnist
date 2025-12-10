@@ -1,0 +1,15 @@
+T 100, interval 1: FID 2.5568, time 0.4043
+T 100, interval 2: FID 2.5173, time 0.1843
+T 100, interval 5: FID 2.4613, time 0.0626
+T 100, interval 10: FID 2.3675, time 0.0282
+T 100, interval 20: FID 2.3461, time 0.0159
+T 500, interval 1: FID 0.2457, time 2.1148
+T 500, interval 2: FID 0.2511, time 1.0617
+T 500, interval 5: FID 0.2635, time 0.4006
+T 500, interval 10: FID 0.2818, time 0.1894
+T 500, interval 20: FID 0.2874, time 0.0831
+T 1000, interval 1: FID 0.2072, time 4.2589
+T 1000, interval 2: FID 0.2086, time 2.1346
+T 1000, interval 5: FID 0.2137, time 0.8220
+T 1000, interval 10: FID 0.1640, time 0.3984
+T 1000, interval 20: FID 0.1570, time 0.1887
