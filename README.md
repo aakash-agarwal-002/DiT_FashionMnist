@@ -89,7 +89,7 @@ Each experimental variant folder contains:
 | heads       | 8     |
 | ff_dim      | 4     |
 | epochs      | 25    |
-| patch_size  | 4     |
+| patch_size  | 7     |
 | lr          | 1e-3  |
 
 These values govern the diffusion process, architectural depth and width, and all principal training settings.
