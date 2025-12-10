@@ -1,30 +1,48 @@
 # DiT_FashionMnist
 
-**DiT_FashionMnist**: a collection of experiments and reference code for training Diffusion Transformer (DiT) models on the FashionMNIST dataset. This repository includes multiple model variants, training/inference scripts, checkpoints, and utilities used to run experiments, reproduce results, and generate sample images.
+This repository provides experiments and reference code for training Diffusion Transformer (DiT) models on the FashionMNIST dataset. It contains multiple model variants, training and inference scripts, checkpoints, and utilities for reproducing results and generating sample outputs.
 
-**Repository Overview**
-- **`adaptive_layer_norm/`**: DiT variant using adaptive layer normalization. Contains training code, checkpoints, logs, and sample outputs.
-- **`adaptive_layer_norm_zero/`**: Variant with zero-initialized adaptive layer normalization.
-- **`in-context_conditioning/`**: Experiments that include in-context conditioning mechanisms.
-- **`inference_optimization_ddim/`**: Inference optimizations and DDIM sampling experiments.
-- **`no_conditioning/`**: Model variant trained without conditioning information.
-- **`data/`**: Local datasets; includes `FashionMNIST` and `MNIST` raw files used by experiments.
+## Repository Overview
 
-**Quick Status**
-- Several checkpoints are included in each variant folder under `checkpoints/` (e.g. `dit_epoch_25.pt`).
-- Sample outputs, logs, and FID/loss tracking live under each variant's `results/` and `dit_log.txt`.
+- `adaptive_layer_norm/`  
+  DiT variant using adaptive layer normalization. Includes training scripts, checkpoints, logs, and sample outputs.
 
-**Requirements**
-- The project uses PyTorch and common machine-learning utilities. The `requirements.txt` contains the canonical list. Key packages:
-	- `torch`
-	- `torchvision`
-	- `numpy`
-	- `matplotlib`
-	- `tqdm`
-	- `torchmetrics`
+- `adaptive_layer_norm_zero/`  
+  Variant with zero initialized adaptive layer normalization.
 
-**Setup**
-Create and activate a Python environment (conda recommended):
+- `in-context_conditioning/`  
+  Experiments that incorporate in-context conditioning mechanisms.
+
+- `inference_optimization_ddim/`  
+  Inference optimizations and DDIM based sampling experiments.
+
+- `no_conditioning/`  
+  DiT trained without conditioning information.
+
+- `data/`  
+  Local datasets. Contains FashionMNIST and MNIST raw IDX files used by the experiments.
+
+Every variant directory contains its own `dit.py`, `vit_model.py`, checkpoints, and results folder.
+
+## Quick Status
+
+- Checkpoints are located under `checkpoints/` in each variant folder, for example `dit_epoch_25.pt`.
+- Sample outputs, logs, training loss, and FID measurements appear in each variant’s `results/` directory and in `dit_log.txt`.
+
+## Requirements
+
+Install Python dependencies from `requirements.txt`. Key packages include:
+
+- `torch`
+- `torchvision`
+- `numpy`
+- `matplotlib`
+- `tqdm`
+- `torchmetrics`
+
+## Setup
+
+Create and activate an environment:
 
 ```zsh
 conda create -n dit_fmnist python=3.10 -y
@@ -32,8 +50,10 @@ conda activate dit_fmnist
 pip install -r requirements.txt
 ```
 
-**Preparing the Data**
-- The repository already contains raw FashionMNIST files under `data/FashionMNIST/raw/` (these are the standard IDX files). If you prefer to download automatically via `torchvision`, you can run:
+## Preparing the Data
+
+The repository includes FashionMNIST raw IDX files under `data/FashionMNIST/raw/`.  
+If you prefer an automatic download via torchvision, run:
 
 ```zsh
 python - <<'PY'
@@ -44,49 +64,88 @@ print('Downloaded FashionMNIST to data/FashionMNIST')
 PY
 ```
 
-If you already have IDX files, keep them in `data/FashionMNIST/raw/` and the training scripts will use them directly.
+If you already have IDX files, leave them in `data/FashionMNIST/raw/`. Training scripts will load them automatically.
 
-**How the Code Is Organized**
-- Each experimental variant folder contains:
-	- `dit.py`: main training / entrypoint script for that variant.
-	- `vit_model.py`: ViT-based model definitions used by DiT.
-	- `checkpoints/`: saved model checkpoints (e.g., `dit_epoch_25.pt`).
-	- `results/`: generated images, loss logs, FID scores, and test outputs.
+## How the Code Is Organized
 
-**Running Training**
-- Basic usage (run from inside a variant directory):
+Each experimental variant folder contains:
+
+- `dit.py`  
+  Main training and entrypoint script.
+- `vit_model.py`  
+  Vision Transformer based model definitions used in DiT.
+- `checkpoints/`  
+  Saved model weights.
+- `results/`  
+  Generated images, loss logs, FID scores, and test outputs.
+
+## Parameters and Hyperparameters
+
+- \( \text{timesteps} = 1000 \)
+- \( \text{emb\_dim} = 256 \)
+- \( \text{num\_block} = 6 \)
+- \( \text{heads} = 8 \)
+- \( \text{ff\_dim} = 4 \)
+- \( \text{epochs} = 25 \)
+- \( \text{patch\_size} = 4 \)
+- \( \text{lr} = 10^{-3} \)
+
+These values govern the diffusion process, architectural depth and width, and all principal training settings.
+
+## Dataset Note
+
+The training code works out of the box with any image dataset that provides tensors of shape  
+\((C, H, W)\) for each sample.  
+The model automatically adapts to the input channel count and spatial resolution.  
+To switch datasets, simply point your data loader to a new dataset following the same tensor shape convention.
+
+## Running Training
+
+From inside a variant directory:
 
 ```zsh
 cd adaptive_layer_norm
 python dit.py
 ```
 
-- Notes:
-	- Many hyperparameters are defined at the top of each `dit.py` file or in simple config sections. Edit those values to change learning rate, number of epochs, batch size, model size, and dataset paths.
-	- Checkpoints are written to the local `checkpoints/` directory. Logs (loss, FID) are saved inside `results/` and `dit_log.txt`.
+Notes:
 
-**Running Inference / Sampling**
-- Example (using a saved checkpoint):
+- Hyperparameters are defined at the top of `dit.py`. Modify them to adjust learning rate, number of epochs, batch size, model size, dataset paths, or architectural details.
+- Checkpoints are written to `checkpoints/`.
+- Logs and metrics appear in `results/` and `dit_log.txt`.
+
+## Running Inference and Sampling
+
+To generate samples using the latest checkpoint:
 
 ```zsh
 cd adaptive_layer_norm
-python dit.py # uses the last saved checkpoint
+python dit.py
 ```
 
-**Files of Interest**
-- `checkpoints/dit_epoch_25.pt`: example saved model weights.
-- `results/fid_scores.txt`: tracked FID scores across saved checkpoints.
-- `results/loss.txt` and `dit_log.txt`: training loss and logging output.
+The script automatically loads the most recent checkpoint unless configured otherwise.
 
-**Reproducing the Provided Results**
-1. Install dependencies (see Setup).
-2. Ensure `data/FashionMNIST` exists (download via torchvision or use the included raw files).
-3. Choose a variant folder (for the canonical DiT variant, use `adaptive_layer_norm/`).
-4. Start training by running `python dit.py` inside that folder. Monitor `results/` and `dit_log.txt` for progress.
-5. Use saved checkpoints in `checkpoints/` to run sampling/evaluation.
+## Files of Interest
 
-**Tips & Troubleshooting**
-- GPU memory: reduce `batch_size` or `model_size` in the script if you run out of memory.
-- Missing dependencies: re-run `pip install -r requirements.txt` and check for system-level dependencies required by `torch`.
-- If `dit.py` lacks CLI parsing: open the script and edit configuration variables directly at the top of the file.
+- `checkpoints/dit_epoch_25.pt`  
+  Example model checkpoint.
 
+- `results/fid_scores.txt`  
+  Recorded FID values per saved checkpoint.
+
+- `results/loss.txt` and `dit_log.txt`  
+  Training loss and general logging output.
+
+## Reproducing the Provided Results
+
+1. Install dependencies.  
+2. Ensure `data/FashionMNIST` exists via download or local raw IDX files.  
+3. Navigate to a variant folder, for example `adaptive_layer_norm/`.  
+4. Run `python dit.py` and monitor `results/` and `dit_log.txt`.  
+5. Use the saved checkpoints for sampling or evaluation.
+
+## Troubleshooting
+
+- If GPU memory is insufficient, reduce `batch_size` or the model size.  
+- If dependencies are missing, reinstall using `pip install -r requirements.txt`.  
+- If no command line parser is provided in `dit.py`, modify hyperparameters directly inside the script.

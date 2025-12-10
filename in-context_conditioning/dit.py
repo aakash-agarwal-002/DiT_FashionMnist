@@ -12,13 +12,13 @@ import random
 import numpy as np
 
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-
+batch_size = 128
 transform = transforms.ToTensor()
 
 train_dataset = datasets.FashionMNIST(root="../data", train=True, transform=transform, download=True)
 test_dataset = datasets.FashionMNIST(root="../data", train=False, transform=transform, download=True)
 
-train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 classes = train_dataset.classes
@@ -60,6 +60,7 @@ class DiTViT(nn.Module):
     def __init__(self,timesteps,num_classes,img_size=28,patch=7,in_ch=1,embed_dim=256,num_block=6,heads=8,ff_dim=4,elementwise_affine=False):
         super().__init__()
         self.img_size = img_size
+        self.in_ch = in_ch
         self.patch_size = patch
         self.embed_dim = embed_dim
 
@@ -98,7 +99,7 @@ class DiTViT(nn.Module):
         P = self.patch_size
         H = self.img_size
         W = self.img_size
-        C = 1
+        C = self.in_ch
         vit = vit.view(B, H//P, W//P, C, P, P)
         vit = vit.permute(0,3,1,4,2,5)
         vit = vit.reshape(B, C, H, W)
@@ -106,19 +107,30 @@ class DiTViT(nn.Module):
 
 
 timesteps = 1000
-model = DiTViT(timesteps,num_classes=len(classes)).to(device)
+in_ch = train_dataset[0][0].shape[0]
+H = train_dataset[0][0].shape[1]
+W = train_dataset[0][0].shape[2]
+emb_dim = 256
+num_block=6
+heads=8
+ff_dim=4
+epochs = 25
+patch_size = 4
+
+assert H%patch_size == 0
+
+model = DiTViT(timesteps,num_classes=len(classes),img_size=H,patch=patch_size,in_ch=in_ch,embed_dim=emb_dim,num_block=num_block,heads=heads,ff_dim=ff_dim,elementwise_affine=False).to(device)
 criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-epochs = 25
 start_epoch = 0
+
 
 def train_one_epoch(model, loader, optimizer, epoch):
     model.train()
     total_loss = 0
     total = 0
     for x, y in tqdm(loader):
-        x = x.to(device) 
-        print(x.shape)
+        x = x.to(device)
         y = y.to(device)
         batch_size = x.shape[0]
         sampled_timesteps = torch.randint(timesteps, size=(batch_size,), device=device)
@@ -215,7 +227,6 @@ for epoch in range(start_epoch, epochs):
                 fig.savefig(f"results/test/e_{epoch+1}_T{T}.png")
                 plt.close(fig)
         model.train()
-
 
     with open("results/loss.txt", "a") as f:
         f.write(f"epoch {epoch+1}: {avg_loss}\n")
