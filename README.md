@@ -81,14 +81,16 @@ Each experimental variant folder contains:
 
 ## Parameters and Hyperparameters
 
-- \( \text{timesteps} = 1000 \)
-- \( \text{emb\_dim} = 256 \)
-- \( \text{num\_block} = 6 \)
-- \( \text{heads} = 8 \)
-- \( \text{ff\_dim} = 4 \)
-- \( \text{epochs} = 25 \)
-- \( \text{patch\_size} = 4 \)
-- \( \text{lr} = 10^{-3} \)
+| Parameter   | Value |
+|-------------|-------|
+| timesteps   | 1000  |
+| emb_dim     | 256   |
+| num_block   | 6     |
+| heads       | 8     |
+| ff_dim      | 4     |
+| epochs      | 25    |
+| patch_size  | 4     |
+| lr          | 1e-3  |
 
 These values govern the diffusion process, architectural depth and width, and all principal training settings.
 
