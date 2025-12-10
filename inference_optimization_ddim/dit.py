@@ -182,8 +182,8 @@ def test_ddim(model, num_samples,test_loader,classes,timesteps,interval=1,device
     return samples, labels
 
 os.makedirs("checkpoints", exist_ok=True)
-os.makedirs("samples/test", exist_ok=True)
-os.makedirs("samples/loss", exist_ok=True)
+os.makedirs("results/test", exist_ok=True)
+os.makedirs("results/loss", exist_ok=True)
 
 
 
@@ -215,7 +215,7 @@ for epoch in range(start_epoch, epochs):
     plt.ylabel("loss")
     plt.xlabel("epoch")
     plt.title("loss")
-    plt.savefig(f"samples/loss/loss_epoch_{epoch+1}.png")
+    plt.savefig(f"results/loss/loss_epoch_{epoch+1}.png")
     plt.close()
 
     if (epoch + 1) % 5 == 0:
@@ -240,11 +240,11 @@ for epoch in range(start_epoch, epochs):
                         ax.set_title(f"{labels[i]}")
                         ax.axis("off")
                     fig.tight_layout()
-                    fig.savefig(f"samples/test/e_{epoch+1}_T{T}_I{interval}.png")
+                    fig.savefig(f"results/test/e_{epoch+1}_T{T}_I{interval}.png")
                     plt.close(fig)
         model.train()
 
-    with open("samples/loss.txt", "a") as f:
+    with open("results/loss.txt", "a") as f:
         f.write(f"epoch {epoch+1}: {avg_loss}\n")
 
 
@@ -336,5 +336,5 @@ for T in [100, 500, 1000]:
         
         fid_results[(T, interval)] = (fid_T.item(), avg_time)
 
-        with open("samples/fid_scores.txt", "a") as f:
+        with open("results/fid_scores.txt", "a") as f:
             f.write(f"T {T}, interval {interval}: FID {fid_T.item():.4f}, time {avg_time:.4f}\n")

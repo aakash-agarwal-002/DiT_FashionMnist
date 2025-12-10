@@ -151,8 +151,8 @@ def test(model, num_samples,test_loader,classes,timesteps,device=device):
     return samples, labels
 
 os.makedirs("checkpoints", exist_ok=True)
-os.makedirs("samples/test", exist_ok=True)
-os.makedirs("samples/loss", exist_ok=True)
+os.makedirs("results/test", exist_ok=True)
+os.makedirs("results/loss", exist_ok=True)
 
 
 
@@ -184,7 +184,7 @@ for epoch in range(start_epoch, epochs):
     plt.ylabel("loss")
     plt.xlabel("epoch")
     plt.title("loss")
-    plt.savefig(f"samples/loss/loss_epoch_{epoch+1}.png")
+    plt.savefig(f"results/loss/loss_epoch_{epoch+1}.png")
     plt.close()
 
     if (epoch + 1) % 5 == 0:
@@ -207,11 +207,11 @@ for epoch in range(start_epoch, epochs):
                     ax.set_title(f"{labels[i]}")
                     ax.axis("off")
                 fig.tight_layout()
-                fig.savefig(f"samples/test/e_{epoch+1}_T{T}.png")
+                fig.savefig(f"results/test/e_{epoch+1}_T{T}.png")
                 plt.close(fig)
         model.train()
 
-    with open("samples/loss.txt", "a") as f:
+    with open("results/loss.txt", "a") as f:
         f.write(f"epoch {epoch+1}: {avg_loss}\n")
 
 
@@ -285,9 +285,9 @@ plt.plot(sorted(fid_results.keys()),
 plt.xlabel("timesteps")
 plt.ylabel("FID")
 plt.title("FID vs timesteps")
-plt.savefig("samples/fid_vs_timesteps.png")
+plt.savefig("results/fid_vs_timesteps.png")
 plt.close()
 
-with open("samples/fid_scores.txt", "w") as f:
+with open("results/fid_scores.txt", "w") as f:
     for T in sorted(fid_results.keys()):
         f.write(f"T {T}: {fid_results[T]}\n")

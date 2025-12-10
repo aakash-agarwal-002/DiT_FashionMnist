@@ -15,8 +15,8 @@ device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
 transform = transforms.ToTensor()
 
-train_dataset = datasets.FashionMNIST(root="data", train=True, transform=transform, download=True)
-test_dataset = datasets.FashionMNIST(root="data", train=False, transform=transform, download=True)
+train_dataset = datasets.FashionMNIST(root="../data", train=True, transform=transform, download=True)
+test_dataset = datasets.FashionMNIST(root="../data", train=False, transform=transform, download=True)
 
 train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
@@ -117,7 +117,8 @@ def train_one_epoch(model, loader, optimizer, epoch):
     total_loss = 0
     total = 0
     for x, y in tqdm(loader):
-        x = x.to(device)
+        x = x.to(device) 
+        print(x.shape)
         y = y.to(device)
         batch_size = x.shape[0]
         sampled_timesteps = torch.randint(timesteps, size=(batch_size,), device=device)
@@ -155,8 +156,8 @@ def test(model, num_samples,test_loader,classes,timesteps,device=device):
     return samples, labels
 
 os.makedirs("checkpoints", exist_ok=True)
-os.makedirs("samples/test", exist_ok=True)
-os.makedirs("samples/loss", exist_ok=True)
+os.makedirs("results/test", exist_ok=True)
+os.makedirs("results/loss", exist_ok=True)
 
 
 
@@ -188,7 +189,7 @@ for epoch in range(start_epoch, epochs):
     plt.ylabel("loss")
     plt.xlabel("epoch")
     plt.title("loss")
-    plt.savefig(f"samples/loss/loss_epoch_{epoch+1}.png")
+    plt.savefig(f"results/loss/loss_epoch_{epoch+1}.png")
     plt.close()
 
     if (epoch + 1) % 5 == 0:
@@ -211,12 +212,12 @@ for epoch in range(start_epoch, epochs):
                     ax.set_title(f"{labels[i]}")
                     ax.axis("off")
                 fig.tight_layout()
-                fig.savefig(f"samples/test/e_{epoch+1}_T{T}.png")
+                fig.savefig(f"results/test/e_{epoch+1}_T{T}.png")
                 plt.close(fig)
         model.train()
 
 
-    with open("samples/loss.txt", "a") as f:
+    with open("results/loss.txt", "a") as f:
         f.write(f"epoch {epoch+1}: {avg_loss}\n")
 
 
@@ -290,9 +291,9 @@ plt.plot(sorted(fid_results.keys()),
 plt.xlabel("timesteps")
 plt.ylabel("FID")
 plt.title("FID vs timesteps")
-plt.savefig("samples/fid_vs_timesteps.png")
+plt.savefig("results/fid_vs_timesteps.png")
 plt.close()
 
-with open("samples/fid_scores.txt", "w") as f:
+with open("results/fid_scores.txt", "w") as f:
     for T in sorted(fid_results.keys()):
         f.write(f"T {T}: {fid_results[T]}\n")
